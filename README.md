@@ -6,7 +6,11 @@ DES332-1 Computer Security Assignment. Here's some info:
 - Noravorn Tonsirianusorn, 6422781458
 
 ## Structure
-- Layer: APP (our demonstration app), Protocol (zip file, text, etc), RSA (mod expo, arithmatic)
+- Layer based: Each branch reflects each layer. `main` branch is for the finished combined product.
+  - There should be 3 folders: `App`, `Protocol`, and `RSA`. In the root folder should be `main.py` for running the entire project.
+- `App` our demonstration app, currently undecided. This branch should handle UI and API (with TCP, email, or whatever APIs we need to connect)
+- `Protocol` handles file IO, type conversion, and PGP header fields
+- `RSA` handles prime numbers, modulo exponentiation, and other functions to encrypt and decrypt
 
 ## Project Scope
 - Demonstration App: build an end-2-end encryption software using PGP, so that 2 hypothetical users can talk securely

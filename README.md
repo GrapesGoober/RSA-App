@@ -6,7 +6,7 @@ DES332-1 Computer Security Assignment. Here's some info:
 - Noravorn Tonsirianusorn, 6422781458
 
 ## Structure
-- Layer: APP (our demonstration app), IO (zip file, text, etc), RSA (mod expo, arithmatic)
+- Layer: APP (our demonstration app), Protocol (zip file, text, etc), RSA (mod expo, arithmatic)
 
 ## Project Scope
 - Demonstration App: build an end-2-end encryption software using PGP, so that 2 hypothetical users can talk securely

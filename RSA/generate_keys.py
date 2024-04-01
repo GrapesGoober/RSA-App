@@ -1,9 +1,14 @@
 import random
+SMALL_PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 
+				53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 
+				109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 
+				173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 
+				233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293]
 
 # Miller-Rabin primality test using 15 iterations
 def is_probably_prime(n, iter = 15) -> bool:
-	# simple small factor primality check first, to catch easy cases
-	for i in [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]:
+	# simple small primes primality check first, to catch easy cases
+	for i in SMALL_PRIMES:
 		if n % i == 0:
 			return False
 	# run the Miller-Rabin algorithm
@@ -17,7 +22,7 @@ def is_probably_prime(n, iter = 15) -> bool:
 			return True
 	return False
 
-# generates 2 prime numbers, p & q
+# generates a random prime number
 def generate_prime_number() -> int:
 
 	# key size should be sufficiently large
@@ -29,4 +34,5 @@ def generate_prime_number() -> int:
 		num += 2
 	return num
     
-print(generate_prime_number())
+if __name__ == "__main__":
+	print(generate_prime_number())

@@ -38,6 +38,3 @@ def generate_prime() -> int:
 	while not is_probably_prime(num):
 		num += 2
 	return num
-    
-if __name__ == "__main__":
-	print(generate_prime())

@@ -7,22 +7,25 @@ SMALL_PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
 
 # Miller-Rabin primality test using 15 iterations
 def is_probably_prime(n, iter = 15) -> bool:
-	
+
 	# simple small primes primality check first, to catch easy cases
 	for i in SMALL_PRIMES:
 		if n % i == 0:
 			return False
-		
-	# run the Miller-Rabin algorithm
-	randnum = random.randint(2, n - 2)
-	x = pow(randnum, (n - 1) >> 1, n)
-	if x == 1 or x == n - 1:
-		return True
-	for _ in range(iter - 1):
-		x = pow(x, 2, n)
-		if x == n - 1:
-			return True
-	return False
+
+	r, s = 0, n - 1
+	while s % 2 == 0:
+		r += 1
+		s //= 2
+	for _ in range(iter):
+		a = random.randrange(2, n - 1)
+		x = pow(a, s, n)
+		if x == 1 or x == n - 1: continue
+		for _ in range(r - 1):
+			x = pow(x, 2, n)
+			if x == n - 1: break
+		else: return False
+	return True
 
 # generates a random prime number
 def generate_prime() -> int:

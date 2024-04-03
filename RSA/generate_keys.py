@@ -28,10 +28,10 @@ def is_probably_prime(n, iter = 15) -> bool:
 	return True
 
 # generates a random prime number
-def generate_prime() -> int:
+def generate_prime(size: int = 1024) -> int:
 
 	# key size should be sufficiently large
-	min_range, max_range = 2**1024, 2**2048
+	min_range, max_range = 2**size, 2**(size * 2)
 
 	# keep randomly guessing an odd number until it is prime
 	num = random.randint(min_range, max_range) | 1
@@ -40,9 +40,9 @@ def generate_prime() -> int:
 	return num
 
 # generate RSA keys, returns public key and private key
-def generate_keys() -> tuple[tuple[int, int], tuple[int, int]]:
-    p = generate_prime()
-    q = generate_prime()
+def generate_keys(size: int = 1024) -> tuple[tuple[int, int], tuple[int, int]]:
+    p = generate_prime(size)
+    q = generate_prime(size)
     n = p * q
     z = (p - 1) * (q - 1)
     e = 65537

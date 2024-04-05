@@ -47,3 +47,4 @@ def generate_keys(size: int = 1024, e: int = 65537) -> tuple[tuple[int, int], tu
     z = (p - 1) * (q - 1)
     d = pow(e, -1, z)
     return (e, n), (d, n)
+

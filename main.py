@@ -1,16 +1,20 @@
-from Protocol import SocketUDP
+from Protocol import ServerChatroom, ClientChatroom
 
-IP = "127.0.0.1"
-PORT_A = 5004
-PORT_B = 5005
+chatroom_IP = "127.0.0.1"
+chatroom_PORT = 5000
 
-sock = SocketUDP(IP, PORT_A, IP, PORT_B)
-sock.create_sockets()
+
+#s = ServerChatroom(chatroom_IP, chatroom_PORT)
+s = ClientChatroom(chatroom_IP, chatroom_PORT)
 
 while True:
-    message = input("> ").encode()
-    if message == b"END":
+    m = input()
+    if m == "END":
+        s.terminate()
         break
-    sock.send(message)
 
-sock.print_log()
+    if m == "LOG":
+        for i in s.message_log: print(i)
+        continue
+
+    s.send(m.encode())

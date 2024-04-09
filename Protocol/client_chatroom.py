@@ -10,24 +10,22 @@ class ClientChatroom:
         def receive():
             while self.is_alive:
                 data = self.sock.recv(1024)
-                if not data: break
-                header, message = data[0].to_bytes(), data[1:]
-                print(message)
-                self.message_log.append(message)
-                if header == b"T":
+                if not data: 
                     print("THIS CHAT HAS BEEN TERMINATED")
-                    self.sock.close()
+                    self.is_alive = False
                     break
-            self.is_alive = False
+                print(data)
+                self.message_log.append(data)
 
-        self.receive_thread = threading.Thread(target=receive, daemon=True)
+        self.receive_thread = threading.Thread(target=receive)
         self.receive_thread.start()
 
     def terminate(self):
-        self.sock.sendall(b"T-")
+        self.sock.shutdown(socket.SHUT_RDWR)
+        self.sock.close()
         self.is_alive = False
 
     def send(self, message):
         self.message_log.append(message)
-        self.sock.sendall(b'M' + message)
+        self.sock.sendall(message)
 

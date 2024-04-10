@@ -1,2 +1,2 @@
-from Protocol.server_chatroom import ServerChatroom
+import Protocol.server_chatroom as server_chatroom
 from Protocol.client_chatroom import ClientChatroom

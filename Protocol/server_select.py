@@ -9,7 +9,7 @@ def start_chatroom(ip: str, port: int):
     global sock, is_running
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setblocking(False)
-    sock.bind(("127.0.0.1", port))
+    sock.bind((ip, port))
     sock.listen()
     inputs.append(sock)
     is_running = True

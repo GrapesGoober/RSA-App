@@ -1,31 +1,32 @@
-import socket, threading
+import socket, select, threading                                                                                                                                
 
-class ClientChatroom:
-    def __init__(self, host: str, port: int) -> None:
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host, port))
-        self.message_log: list[bytes] = []
+messages = [ ] # outgoing message queue
+is_running = False
+sock: socket.socket = None
+select_inout = [ ]
 
-        self.is_alive = True
-        def receive():
-            while self.is_alive:
-                data = self.sock.recv(1024)
-                if not data: 
-                    print("THIS CHAT HAS BEEN TERMINATED")
-                    self.is_alive = False
-                    break
+def connect_chatroom(ip: str, port: int):
+    global sock, is_running
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((ip, port))
+    select_inout.append(sock)
+    is_running = True
+    chatroom = threading.Thread(target=chatroom_thread)
+    chatroom.start()
+
+def chatroom_thread():
+    while is_running:
+        readable, writable, _ = select.select(select_inout, select_inout, [])
+        for s in readable:
+            data = s.recv(1024)
+            if data:
                 print(data)
-                self.message_log.append(data)
-
-        self.receive_thread = threading.Thread(target=receive)
-        self.receive_thread.start()
-
-    def terminate(self):
-        self.sock.shutdown(socket.SHUT_RDWR)
-        self.sock.close()
-        self.is_alive = False
-
-    def send(self, message):
-        self.message_log.append(message)
-        self.sock.sendall(message)
-
+            if not data:
+                print("THIS CHATROOM IS TERMINATED")
+                sock.close()
+                return
+        for s in writable:
+            if messages:
+                s.sendall(messages[0]) 
+                messages.pop(0)
+    sock.close()

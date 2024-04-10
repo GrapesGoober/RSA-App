@@ -1,42 +1,44 @@
 import select, socket, threading
 
-class ServerChatroom:
-    def __init__(self, port: int) -> None:
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.setblocking(False)
-        self.sock.bind(("127.0.0.1", port))
-        self.sock.listen()
-        self.inputs = [ self.sock ]
-        self.messages = [ ] # outgoing message queue
-        self.conn = None
-        self.is_running = True
-        chatroom_thread = threading.Thread(target=self.__chatroom_thread)
-        chatroom_thread.start()
+messages = [ ] # outgoing message queue
+is_running = False
+sock: socket.socket = None
+inputs = [ ]
 
-    def __chatroom_thread(self):
-        while self.is_running:
-            readable, writable, _ = select.select(self.inputs, self.inputs, [])
-            for s in readable:
-                if s is self.sock:
-                    conn, addr = s.accept()
-                    print(f"connected from {addr}")
-                    self.inputs.append(conn)
-                else: 
-                    data = s.recv(1024)
-                    if data:
-                        print(data)
-                    if not data:
-                        print("THIS CHATROOM IS TERMINATED")
-                        self.sock.close()
-                        return
-            for s in writable:
-                if self.messages:
-                    s.sendall(self.messages[0]) 
-                    self.messages.pop(0)
-        self.server.close()
+def start_chatroom(ip: str, port: int):
+    global sock, is_running
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setblocking(False)
+    sock.bind(("127.0.0.1", port))
+    sock.listen()
+    inputs.append(sock)
+    is_running = True
+    chatroom = threading.Thread(target=chatroom_thread)
+    chatroom.start()
 
+def chatroom_thread():
+    while is_running:
+        readable, writable, _ = select.select(inputs, inputs, [])
+        for s in readable:
+            if s is sock:
+                conn, addr = s.accept()
+                print(f"connected from {addr}")
+                inputs.append(conn)
+            else: 
+                data = s.recv(1024)
+                if data:
+                    print(data)
+                if not data:
+                    print("THIS CHATROOM IS TERMINATED")
+                    sock.close()
+                    return
+        for s in writable:
+            if messages:
+                s.sendall(messages[0]) 
+                messages.pop(0)
+    sock.close()
 
-chat = ServerChatroom(5000)
+start_chatroom("127.0.0.1", 5000)
 
 while True:
     m = input()
@@ -49,5 +51,5 @@ while True:
     #     for i in s.message_log: print(i)
     #     continue
 
-    chat.messages.append(m.encode())
+    messages.append(m.encode())
 

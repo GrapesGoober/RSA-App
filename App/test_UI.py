@@ -37,6 +37,11 @@ def encryption_decryption_program():
                 elif keyChange == "6":
                     change_data("my_IP")
                 elif keyChange == "7":
+                    print("press 1 for checking data")
+                    print("press 2 to change the data")
+                    print("press 3 to generate a key")
+                    print("press 4 to send a message")
+                    print("press 5 to exit")
                     break
                 else:
                     print("Invalid operation. Please try again.")

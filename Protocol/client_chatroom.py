@@ -15,6 +15,7 @@ def connect_chatroom(ip: str, port: int):
     chatroom.start()
 
 def chatroom_thread():
+    global is_running
     while is_running:
         readable, writable, _ = select.select(select_inout, select_inout, [])
         for s in readable:
@@ -24,6 +25,7 @@ def chatroom_thread():
             if not data:
                 print("THIS CHATROOM IS TERMINATED")
                 sock.close()
+                is_running = False
                 return
         for s in writable:
             if messages:

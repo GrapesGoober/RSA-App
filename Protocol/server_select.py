@@ -3,7 +3,7 @@ import select, socket, threading
 messages = [ ] # outgoing message queue
 is_running = False
 sock: socket.socket = None
-inputs = [ ]
+select_inout = [ ]
 
 def start_chatroom(ip: str, port: int):
     global sock, is_running
@@ -11,19 +11,19 @@ def start_chatroom(ip: str, port: int):
     sock.setblocking(False)
     sock.bind((ip, port))
     sock.listen()
-    inputs.append(sock)
+    select_inout.append(sock)
     is_running = True
     chatroom = threading.Thread(target=chatroom_thread)
     chatroom.start()
 
 def chatroom_thread():
     while is_running:
-        readable, writable, _ = select.select(inputs, inputs, [])
+        readable, writable, _ = select.select(select_inout, select_inout, [])
         for s in readable:
             if s is sock:
                 conn, addr = s.accept()
                 print(f"connected from {addr}")
-                inputs.append(conn)
+                select_inout.append(conn)
             else: 
                 data = s.recv(1024)
                 if data:

@@ -1,5 +1,5 @@
 import json
-from RSA import generate_keys,encrypt,decrypt
+from RSA import generate_keys
 from Protocol import Chatroom
 
 def secure_TCP_chatroom():
@@ -27,16 +27,25 @@ def change_keys():
         change_keys()
     else:
         pub,priv = generate_keys(size)
-    return
+        with open("App\config.json", "r") as f:
+            config = json.loads(f.read())
+        try:
+            config["k_pub"] = pub
+            config["k_priv"] = priv
+        except ValueError:
+            print("Invalid input. Please enter a valid value.")
+        with open("App\config.json", "w") as f:
+            json.dump(config, f, indent=4)  # Write back to file with indentation
 
 def create_chatroom():
     my_IP = input("Enter IP: ")
     my_PORT = int(input("Enter Port: "))
     chatroom = Chatroom(mode='server', ip=my_IP, port=my_PORT)
-    return
 
 def connect_chatroom():
     dest_IP = input("Enter IP: ")
     dest_PORT = int(input("Enter Port: "))
     chatroom = Chatroom(mode='client', ip=dest_IP, port=dest_PORT)
-    return
+
+if __name__ == "__main__":
+    secure_TCP_chatroom()

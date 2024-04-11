@@ -1,6 +1,7 @@
 import json
-from RSA import generate_keys
+
 from Protocol import Chatroom
+from RSA import generate_keys
 
 def secure_TCP_chatroom():
     while True:
@@ -26,7 +27,8 @@ def change_keys():
         print("Too small! Try again")
         change_keys()
     else:
-        pub,priv = generate_keys(size)
+        pub = size
+        priv = generate_keys(size)
         with open("App\config.json", "r") as f:
             config = json.loads(f.read())
         try:

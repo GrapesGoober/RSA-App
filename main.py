@@ -1,4 +1,5 @@
 from Protocol import Chatroom
+import threading
 
 chatroom_IP = "127.0.0.1"
 chatroom_PORT = 5000
@@ -6,11 +7,17 @@ chatroom_PORT = 5000
 mode = input("enter mode - new chatroom (n), connect chatroom (c): ")
 chatroom = None
 match mode:
-        
     case 'n':
         chatroom = Chatroom(mode='server', ip='127.0.0.1', port=5000)
     case 'c':
         chatroom = Chatroom(mode='client', ip='127.0.0.1', port=5000)
+
+## Setup a message-printing thread
+def display_message_thread():
+    while True:
+        for m in chatroom.receive():
+            print(m.decode())
+threading.Thread(target=display_message_thread, daemon=True).start()
 
 while True:
     m = input()
@@ -18,4 +25,4 @@ while True:
     if m == "END": 
         chatroom.is_running = False
         break
-    chatroom.messages.append(m.encode())
+    chatroom.send(m.encode())

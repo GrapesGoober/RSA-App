@@ -25,7 +25,7 @@ def change_keys():
         print("Too small! Try again")
         change_keys()
     else:
-        generate_keys(size)
+        pub,priv = generate_keys(size)
     return
 
 def create_chatroom():

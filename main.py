@@ -14,7 +14,9 @@ match mode:
 
 ## Setup a message-printing thread
 def display_message_thread():
-    while True:
+    # WHY IS THIS CAUSING THEADS EXCEPTIONS?!?! IT'S JUST A MESSAGE QUEUE!!!
+    # while True:
+    while chatroom.is_running:
         for m in chatroom.receive():
             print(m.decode())
 threading.Thread(target=display_message_thread, daemon=True).start()

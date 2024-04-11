@@ -1,3 +1,6 @@
+import json
+from RSA import generate_keys,encrypt,decrypt
+
 def secure_TCP_chatroom():
     while True:
         print(""" 
@@ -16,10 +19,16 @@ Press Number You Wanna Do: """)
             case _:   print("invalid inputs")
 
 def change_keys():
+    size = int(input("Enter keys size: "))
+    generate_keys(size)
     return
 
 def create_chatroom():
+    my_IP = input("Enter IP: ")
+    my_PORT = input("Enter Port: ")
     return
 
 def connect_chatroom():
+    dest_IP = input("Enter IP: ")
+    dest_PORT = input("Enter Port: ")
     return

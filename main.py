@@ -1,21 +1,30 @@
-from RSA import generate_keys, encrypt, decrypt
-from App import test_UI, new_UI
+from Protocol import Chatroom
+import threading
 
-#message = """
-#    Lorem ipsum dolor sit amet, consectetur adipiscing elit, \
-#    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
-#    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris \
-#    nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in \
-#    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \
-#    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in \
-#    culpa qui officia deserunt mollit anim id est laborum.\
-#""".encode()
+chatroom_IP = "127.0.0.1"
+chatroom_PORT = 5000
 
-#pub, priv = generate_keys(512)
-#cipher_text = encrypt(message, pub)
-#print(cipher_text)
-#original_message = decrypt(cipher_text, priv)
-#print(original_message)
+mode = input("enter mode - new chatroom (n), connect chatroom (c): ")
+chatroom = None
+match mode:
+    case 'n':
+        chatroom = Chatroom(mode='server', ip='127.0.0.1', port=5000)
+    case 'c':
+        chatroom = Chatroom(mode='client', ip='127.0.0.1', port=5000)
 
-#test_UI.encryption_decryption_program()
-new_UI.secure_TCP_chatroom()
+## Setup a message-printing thread
+def display_message_thread():
+    # WHY IS THIS CAUSING THEADS EXCEPTIONS?!?! IT'S JUST A MESSAGE QUEUE!!!
+    # while True:
+    while chatroom.is_running:
+        for m in chatroom.receive():
+            print(m.decode())
+threading.Thread(target=display_message_thread, daemon=True).start()
+
+while True:
+    m = input()
+    if not chatroom.is_running: break
+    if m == "END": 
+        chatroom.is_running = False
+        break
+    chatroom.send(m.encode())

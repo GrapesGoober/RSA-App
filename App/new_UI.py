@@ -27,8 +27,7 @@ def change_keys():
         print("Too small! Try again")
         change_keys()
     else:
-        pub = size
-        priv = generate_keys(size)
+        pub, priv = generate_keys(size)
         with open("App\config.json", "r") as f:
             config = json.loads(f.read())
         try:
@@ -48,6 +47,3 @@ def connect_chatroom():
     dest_IP = input("Enter IP: ")
     dest_PORT = int(input("Enter Port: "))
     chatroom = Chatroom(mode='client', ip=dest_IP, port=dest_PORT)
-
-if __name__ == "__main__":
-    secure_TCP_chatroom()

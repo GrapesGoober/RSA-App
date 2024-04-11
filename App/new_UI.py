@@ -19,8 +19,13 @@ Press Number You Wanna Do: """)
             case _:   print("invalid inputs")
 
 def change_keys():
+    print("The minimum key size is 256")
     size = int(input("Enter keys size: "))
-    generate_keys(size)
+    if size < 256:
+        print("Too small! Try again")
+        change_keys()
+    else:
+        generate_keys(size)
     return
 
 def create_chatroom():

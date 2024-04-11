@@ -1,4 +1,4 @@
-from Protocol import server_chatroom, client_chatroom
+from Protocol import Chatroom
 
 chatroom_IP = "127.0.0.1"
 chatroom_PORT = 5000
@@ -6,12 +6,11 @@ chatroom_PORT = 5000
 mode = input("enter mode - new chatroom (n), connect chatroom (c): ")
 chatroom = None
 match mode:
+        
     case 'n':
-        server_chatroom.start_chatroom(chatroom_IP, chatroom_PORT)
-        chatroom = server_chatroom
+        chatroom = Chatroom(mode='server', ip='127.0.0.1', port=5000)
     case 'c':
-        client_chatroom.connect_chatroom(chatroom_IP, chatroom_PORT)
-        chatroom = client_chatroom
+        chatroom = Chatroom(mode='client', ip='127.0.0.1', port=5000)
 
 while True:
     m = input()

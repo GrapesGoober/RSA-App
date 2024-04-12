@@ -5,7 +5,7 @@ server =    socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sockets:    list[socket.socket] = [server]
 clients:    dict[socket.socket, dict] = {}
 
-MESSAGE_TYPE = b"MESSAGE"
+CHAT_TYPE = b"CHAT"
 SYNC_TYPE = b"SYNC"
 
 # Persistent TCP
@@ -37,7 +37,7 @@ def handle_new_data(conn: socket.socket):
     try: data = conn.recv(1024)
     except ConnectionResetError: pass
     if data: 
-        if clients[conn]['type'] != MESSAGE_TYPE:
+        if clients[conn]['type'] != CHAT_TYPE:
             return
         print("message", data)
         messages.append(data)

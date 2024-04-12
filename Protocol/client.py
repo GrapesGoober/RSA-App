@@ -1,6 +1,6 @@
 import socket, time                                                                                                                          
 
-MESSAGE_TYPE = b"MESSAGE"
+CHAT_TYPE = b"CHAT"
 SYNC_TYPE = b"SYNC"
 
 class ClientChatroom:
@@ -9,7 +9,7 @@ class ClientChatroom:
     
     def connect(self, ip: str, port: int):
         self.client.connect((ip, port))
-        self.client.sendall(MESSAGE_TYPE)
+        self.client.sendall(CHAT_TYPE)
 
     def send_message(self, message: bytes):
         self.client.sendall(message)

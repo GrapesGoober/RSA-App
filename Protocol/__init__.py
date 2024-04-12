@@ -1,2 +1,2 @@
-from Protocol.chatroom import start_chatroom
-from Protocol.client import ClientChatroom
+from Protocol.chatroom import run_chatroom
+from Protocol.client import ClientChatroom, sync_chatroom

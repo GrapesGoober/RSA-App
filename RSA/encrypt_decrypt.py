@@ -1,3 +1,7 @@
+def get_block_size(n: int):
+    block_size = (n.bit_length() // 8) - 1
+    cipher_block_size = (n.bit_length() // 8) + 1
+    return block_size, cipher_block_size
 
 def encrypt(message: bytes, encrypt_key: tuple[int, int]):
     e, n = encrypt_key

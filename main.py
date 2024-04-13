@@ -9,9 +9,10 @@ match mode:
     case 'r':
         k_pub, k_priv = RSA.generate_keys(512)
         data_stream = receive_stream(IP, PORT, k_priv) # we only need d and n
-        for i in data_stream:
-            print(i)
+        with open("Test Files\\receiving_file.txt", "wb") as f:
+            for d in data_stream:
+                f.write(d)
     case 's':
-        message = b"some random send stuff"
-        send_data(IP, PORT, message)
+        with open("Test Files\\sending_file.txt", "rb") as f:
+            send_data(IP, PORT, f.read())
     case _: exit()

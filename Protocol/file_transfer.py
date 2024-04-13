@@ -22,3 +22,12 @@ def send_data(ip: str, port: int, data: bytes):
     conn.sendall(encrypted)
     conn.close()
 
+
+# The problem is that RSA encrypts & decrypts one block at a time
+# ranging from 128 bytes to 256 bytes
+# which is a smaller than size of the recv buffer
+# there is a possibility that the size disparity causes the encrypt/decrypt blocks
+# to not properly match, leading to corrupt data
+# the idea is to use a fixed block size, which is the same as RSA block size
+def encrypt_block(data: bytes, block_size = 128):
+    pass

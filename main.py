@@ -1,7 +1,7 @@
 from Protocol import chat_tcp
 
-chatroom_IP = "127.0.0.1"
-chatroom_PORT = 5000
+IP = "127.0.0.1"
+PORT = 5000
 
 mode = input("enter mode - new chatroom (n), connect (c)")
 match mode:

@@ -4,24 +4,26 @@ IP = "127.0.0.1"
 PORT = 5000
 
 mode = input("enter mode - new chatroom (n), connect (c)")
+to_send: list[bytes] = []
+to_receive: list[bytes] = []
 match mode:
     case 'n':
-        chat_tcp.start_server("127.0.0.1", 5000)
-        chat_tcp.start_chat_sync()
+        conn = chat_tcp.start_server("127.0.0.1", 5000)
+        chat_tcp.start_chat_sync(conn, to_send, to_receive)
     case 'c':
-        chat_tcp.connect_server("127.0.0.1", 5000)
-        chat_tcp.start_chat_sync()
+        conn = chat_tcp.connect_server("127.0.0.1", 5000)
+        chat_tcp.start_chat_sync(conn, to_send, to_receive)
     case _: exit()
 
 # create a background thread to print from received queue
 import threading
 def print_messages():
     while True:
-        while chat_tcp.received:
-            print(chat_tcp.received.pop(0))
+        while to_receive:
+            print(to_receive.pop(0))
 threading.Thread(target=print_messages, daemon=True).start()
 
 # handle user inputs
 while True:
     if m := input():
-        chat_tcp.to_send.append(m.encode())
+        to_send.append(m.encode())

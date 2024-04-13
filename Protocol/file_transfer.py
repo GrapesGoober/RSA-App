@@ -10,7 +10,10 @@ def receive_stream(ip: str, port: int, keys: tuple[int, int]) -> Generator[bytes
     print(f"connected from {addr}")
     k_priv, modulus = keys
     conn.sendall(modulus.to_bytes(modulus.bit_length() // 8 + 1))
-    while data := conn.recv(1024):
+    _, cipher_text_block_size = RSA.get_block_size(modulus)
+    # buffer size should match up to the RSA block size
+    buffer = cipher_text_block_size * 4
+    while data := conn.recv(buffer):
         yield RSA.decrypt(data, (k_priv, modulus))
 
 # connects to TCP server, exchange key modulus, and sends data
@@ -21,13 +24,3 @@ def send_data(ip: str, port: int, data: bytes):
     encrypted = RSA.encrypt(data, (65537, key_n))
     conn.sendall(encrypted)
     conn.close()
-
-
-# The problem is that RSA encrypts & decrypts one block at a time
-# ranging from 128 bytes to 256 bytes
-# which is a smaller than size of the recv buffer
-# there is a possibility that the size disparity causes the encrypt/decrypt blocks
-# to not properly match, leading to corrupt data
-# the idea is to use a fixed block size, which is the same as RSA block size
-def encrypt_block(data: bytes, block_size = 128):
-    pass

@@ -13,20 +13,17 @@ def run_chatroom(ip: str, port: int):
     server.bind((ip, port))
     server.listen()
     while True:
-        readable: list[socket.socket]
         readable, writable, _ = select.select(sockets, sockets, [])
         for s in readable:
-            if s is server: handle_new_conn(s) 
-            else: handle_new_data(s)
-        for conn in writable:
-            handle_sync(conn)
+            if s is server:     handle_new_conn(s) 
+            else:               handle_new_data(s)
+        for conn in writable:   handle_sync(conn)
 
 # handle a case where server receives a new user connection
 def handle_new_conn(server: socket.socket):
     conn, addr = server.accept()
     conn.settimeout(5)  # 5 seconds for client to send their info
     conn_type = conn.recv(1024)
-    print(f"new user at {addr} with type {conn_type}")
     clients[conn] = {'type': conn_type, 'sync': 0}
     conn.setblocking(False)
     sockets.append(conn)
@@ -36,13 +33,8 @@ def handle_new_data(conn: socket.socket):
     data: bytes = None
     try: data = conn.recv(1024)
     except ConnectionResetError: pass
-    if data: 
-        if clients[conn]['type'] != CHAT_TYPE:
-            return
-        print("message", data)
-        messages.append(data)
+    if data: messages.append(data)
     else: 
-        print(f"client {clients[conn] } disconnects")
         sockets.remove(conn)
         conn.close()
         clients.pop(conn)

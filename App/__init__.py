@@ -1,2 +1,1 @@
-from App.new_UI import secure_TCP_chatroom
-from App.test_UI import encryption_decryption_program
+from App.new_UI import secure_file_tranfer

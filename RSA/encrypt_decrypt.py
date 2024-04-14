@@ -1,8 +1,11 @@
+def get_block_size(n: int):
+    block_size = (n.bit_length() // 8) - 1
+    cipher_block_size = (n.bit_length() // 8) + 1
+    return block_size, cipher_block_size
 
 def encrypt(message: bytes, encrypt_key: tuple[int, int]):
     e, n = encrypt_key
-    block_size = (n.bit_length() // 8) - 1
-    cipher_block_size = (n.bit_length() // 8) + 1
+    block_size, cipher_block_size = get_block_size(n)
     cipher_text = []
     for i in range(0, len(message), block_size):
         block = message[i : i + block_size]
@@ -16,7 +19,7 @@ def encrypt(message: bytes, encrypt_key: tuple[int, int]):
 
 def decrypt(cipher_text: bytes, decrypt_key: tuple[int, int]):
     d, n = decrypt_key
-    cipher_block_size = (n.bit_length() // 8) + 1
+    _, cipher_block_size = get_block_size(n)
     decrypted_message = []
     for i in range(0, len(cipher_text), cipher_block_size):
         block = cipher_text[i : i + cipher_block_size]

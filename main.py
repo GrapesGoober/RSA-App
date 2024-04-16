@@ -1,4 +1,4 @@
-from RSA import generate_keys, encrypt, decrypt
+from RSA import generate_keys, encrypt, decrypt, get_block_size
 import random
 
 def generate_large_message(size: int = 300) -> bytes:
@@ -8,9 +8,13 @@ def generate_large_message(size: int = 300) -> bytes:
         randbytes = randint.to_bytes(length=1)
         message_list.append(randbytes)
     return b"".join(message_list)
+    
 
-message = generate_large_message()
-pub, priv = generate_keys(512)
-cipher_text = encrypt(message, pub)
-decrypted = decrypt(cipher_text, priv)
-print(decrypted == message)
+d, n = generate_keys(512)
+for size in range(300, 6000, 100):
+    message = generate_large_message(size)
+    cipher_text = encrypt(message, n)
+    decrypted = decrypt(cipher_text, (d, n))
+    if (decrypted != message):
+        blocksize, _ = get_block_size(n)
+        print("failed", len(message) % blocksize)

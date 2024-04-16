@@ -39,12 +39,12 @@ def generate_prime(size: int = 1024) -> int:
 		num += 2
 	return num
 
-# generate RSA keys, returns public key and private key (default e  = 65537)
-def generate_keys(size: int = 1024, e: int = 65537) -> tuple[tuple[int, int], tuple[int, int]]:
+# generate RSA keys, returns tuple of decrypt exponent and modulo (d, n)
+def generate_keys(size: int = 1024, e: int = 65537) -> tuple[int, int]:
     p = generate_prime(size)
     q = generate_prime(size)
     n = p * q
     z = (p - 1) * (q - 1)
     d = pow(e, -1, z)
-    return (e, n), (d, n)
+    return (d, n)
 

@@ -1,17 +1,18 @@
-from RSA import generate_keys, encrypt, decrypt
+from Protocol import chat_tcp, send_data, receive_stream
+import RSA
 
-message = """
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, \
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris \
-    nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in \
-    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \
-    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in \
-    culpa qui officia deserunt mollit anim id est laborum.\
-""".encode()
+IP = "127.0.0.1"
+PORT = 5000
 
-pub, priv = generate_keys(512)
-cipher_text = encrypt(message, pub)
-print(cipher_text)
-original_message = decrypt(cipher_text, priv)
-print(original_message)
+mode = input("enter mode - receive (r), send (s)")
+match mode:
+    case 'r':
+        keys = RSA.generate_keys(512)
+        data_stream = receive_stream(IP, PORT, keys) # we only need d and n
+        with open("Test Files\\random_bytes_receive.bin", "wb") as f:
+            for d in data_stream:
+                f.write(d)
+    case 's':
+        with open("Test Files\\random_bytes.bin", "rb") as f:
+            send_data(IP, PORT, f.read())
+    case _: exit()

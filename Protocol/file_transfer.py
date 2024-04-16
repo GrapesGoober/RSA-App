@@ -13,8 +13,11 @@ def receive_stream(ip: str, port: int, keys: tuple[int, int]) -> Generator[bytes
     _, cipher_text_block_size = RSA.get_block_size(modulus)
     # buffer size should match up to the RSA block size
     buffer = cipher_text_block_size * 4
+    entire_data = []
     while data := conn.recv(buffer):
-        yield RSA.decrypt(data, (k_priv, modulus))
+        entire_data.append(data)
+    entire_data = b"".join(entire_data)
+    yield RSA.decrypt(entire_data, (k_priv, modulus))
 
 # connects to TCP server, exchange key modulus, and sends data
 def send_data(ip: str, port: int, data: bytes):

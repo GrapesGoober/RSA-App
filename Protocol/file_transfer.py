@@ -20,7 +20,7 @@ def receive_stream(ip: str, port: int, keys: tuple[int, int]) -> Generator[bytes
 def send_data(ip: str, port: int, data: bytes):
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     conn.connect((ip, port))
-    key_n = int.from_bytes(conn.recv(1024))
-    encrypted = RSA.encrypt(data, (65537, key_n))
+    modulus = int.from_bytes(conn.recv(1024))
+    encrypted = RSA.encrypt(data, modulus)
     conn.sendall(encrypted)
     conn.close()

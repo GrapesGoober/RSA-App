@@ -7,8 +7,8 @@ PORT = 5000
 mode = input("enter mode - receive (r), send (s)")
 match mode:
     case 'r':
-        k_pub, k_priv = RSA.generate_keys(512)
-        data_stream = receive_stream(IP, PORT, k_priv) # we only need d and n
+        keys = RSA.generate_keys(512)
+        data_stream = receive_stream(IP, PORT, keys) # we only need d and n
         with open("Test Files\\random_bytes_receive.bin", "wb") as f:
             for d in data_stream:
                 f.write(d)

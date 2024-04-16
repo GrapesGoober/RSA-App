@@ -1,30 +1,43 @@
+from typing import Generator
+
 def get_block_size(n: int):
-    block_size = (n.bit_length() // 8) - 1
-    cipher_block_size = (n.bit_length() // 8) + 1
+    block_size = (n.bit_length() - 1) // 8
+    cipher_block_size = block_size + 1
     return block_size, cipher_block_size
 
-def encrypt(message: bytes, encrypt_key: tuple[int, int]):
-    e, n = encrypt_key
-    block_size, cipher_block_size = get_block_size(n)
-    cipher_text = []
-    for i in range(0, len(message), block_size):
-        block = message[i : i + block_size]
+def get_blocks(message: bytes, size_bytes: int) -> Generator[int, None, None]:
+    for pos in range(0, len(message), size_bytes):
+        block = message[pos:pos + size_bytes]
+        yield block
 
-        block_int = int.from_bytes(block)
-        cipher_int = pow(block_int, e, n)
-        cipher_bytes = cipher_int.to_bytes(cipher_int.bit_length() // 8 + 1)
-        cipher_bytes = b'\x00' * (cipher_block_size - len(cipher_bytes)) + cipher_bytes
-        cipher_text.append(cipher_bytes)
-    return b''.join(cipher_text)
+def get_padded_blocks(message: bytes, block_size: int):
+    for block in get_blocks(message, block_size):
+        padding = block_size - len(block)
+        if padding > 0: block += b'1' + b'0' * (padding - 1)
+        yield block
 
-def decrypt(cipher_text: bytes, decrypt_key: tuple[int, int]):
-    d, n = decrypt_key
-    _, cipher_block_size = get_block_size(n)
-    decrypted_message = []
-    for i in range(0, len(cipher_text), cipher_block_size):
-        block = cipher_text[i : i + cipher_block_size]
-        cipher_int = int.from_bytes(block)
-        block_int = pow(cipher_int, d, n)
-        block_bytes = block_int.to_bytes(block_int.bit_length() // 8 + 1)
-        decrypted_message.append(block_bytes)
-    return b''.join(decrypted_message)
+    if len(message) % block_size == 0: # add an artificial padding
+        yield b'1' + b'0' * (block_size - 1)
+
+def encrypt_blocks(message: bytes, modulo: int, expo: int = 65537):
+    block_size, cipher_block_size = get_block_size(modulo)
+    for block in get_padded_blocks(message, block_size):
+        block = int.from_bytes(block)
+        c = pow(block, expo, modulo)
+        yield c.to_bytes(cipher_block_size)
+
+def decrypt_blocks(message: bytes, key: tuple[int, int]):
+    k_decrypt, modulo = key
+    block_size, cipher_block_size = get_block_size(modulo)
+    for block in get_blocks(message, cipher_block_size):
+        block = int.from_bytes(block)
+        c = pow(block, k_decrypt, modulo)
+        yield c.to_bytes(block_size)
+
+def encrypt(message: bytes, modulo: int, expo: int = 65537):
+    return b"".join(encrypt_blocks(message, modulo, expo=expo))
+
+def decrypt(message: bytes, key: tuple[int, int]):
+    plain_text = b"".join(decrypt_blocks(message, key))
+    return plain_text.rsplit(b'1', 1)[0]
+

@@ -11,6 +11,7 @@ match mode:
         data_stream = receive_stream(IP, PORT, keys) # we only need d and n
         with open("Test Files\\random_bytes_receive.bin", "wb") as f:
             for d in data_stream:
+                print(f"writing to file")
                 f.write(d)
     case 's':
         with open("Test Files\\random_bytes.bin", "rb") as f:

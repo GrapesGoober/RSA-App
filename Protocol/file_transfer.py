@@ -1,23 +1,20 @@
 import socket, RSA
-from typing import Generator, Iterable
 
-# sets up a TCP server, exchange key modulus, and receives data
-def receive_stream(ip: str, port: int, keys: tuple[int, int]) -> Generator[bytes, None, None]:
+# sets up a TCP server, awaits connection, and exchange key modulus
+def await_conn(ip: str, port: int, keys: tuple[int, int]) -> socket.socket:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind((ip, port))
     sock.listen()
     conn, addr = sock.accept()
-    print(f"connected from {addr}")
-    k_priv, modulus = keys
+    _, modulus = keys
     conn.sendall(modulus.to_bytes(modulus.bit_length() // 8 + 1))
-    _, cipher_text_block_size = RSA.get_block_size(modulus)
-    # buffer size should match up to the RSA block size
-    buffer = cipher_text_block_size * 4
-    entire_data = []
-    while data := conn.recv(buffer):
-        entire_data.append(data)
-    entire_data = b"".join(entire_data)
-    yield RSA.decrypt(entire_data, (k_priv, modulus))
+    return conn, addr
+
+# receives data and decrypts
+def receive_and_decrypt(conn: socket.socket, keys: tuple[int, int]) -> bytes:
+    buf_list: list[bytes] = []
+    while buf := conn.recv(1024): buf_list.append(buf)
+    return RSA.decrypt(b''.join(buf_list), keys)
 
 # connects to TCP server, exchange key modulus, and sends data
 def send_data(ip: str, port: int, data: bytes):

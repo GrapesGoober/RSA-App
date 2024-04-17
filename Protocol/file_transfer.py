@@ -1,5 +1,4 @@
 import socket, RSA
-from typing import Generator
 
 # sets up a TCP server, awaits connection, and exchange key modulus
 def await_conn(ip: str, port: int, keys: tuple[int, int]) -> socket.socket:

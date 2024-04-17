@@ -1,26 +1,20 @@
 import socket, RSA
 from typing import Generator
 
-
-# sets up a TCP server, exchange key modulus, and receives data
-def receive_data(ip: str, port: int, keys: tuple[int, int]) -> Generator[bytes, None, None]:
-
-    # create server and await connection
+# sets up a TCP server, awaits connection, and exchange key modulus
+def await_conn(ip: str, port: int, keys: tuple[int, int]) -> socket.socket:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind((ip, port))
     sock.listen()
     conn, addr = sock.accept()
-    print(f"connected from {addr}")
-
-    # exchange key modulus
     _, modulus = keys
     conn.sendall(modulus.to_bytes(modulus.bit_length() // 8 + 1))
+    return conn, addr
 
-    # receive data, using a bytes list as buffer
-    print(f"receiving data")
+# receives data and decrypts
+def receive_and_decrypt(conn: socket.socket, keys: tuple[int, int]) -> bytes:
     buf_list: list[bytes] = []
     while buf := conn.recv(1024): buf_list.append(buf)
-    print(f"decrypting")
     return RSA.decrypt(b''.join(buf_list), keys)
 
 # connects to TCP server, exchange key modulus, and sends data

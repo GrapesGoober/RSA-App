@@ -1,4 +1,4 @@
-from Protocol import chat_tcp, send_data, receive_stream
+from Protocol import file_transfer
 import RSA
 
 IP = "127.0.0.1"
@@ -7,12 +7,19 @@ PORT = 5000
 mode = input("enter mode - receive (r), send (s)")
 match mode:
     case 'r':
-        k_pub, k_priv = RSA.generate_keys(512)
-        data_stream = receive_stream(IP, PORT, k_priv) # we only need d and n
-        with open("Test Files\\receiving_file.txt", "wb") as f:
-            for d in data_stream:
-                f.write(d)
+        print(f"generating keys")
+        keys = RSA.generate_keys(1024)
+        print(f"setting server")
+        conn, addr = file_transfer.await_conn(IP, PORT, keys)
+        print(f"connected from {addr}")
+        print(f"decrypting...")
+        data = file_transfer.receive_and_decrypt(conn, keys)
+        print(f"writing to file")
+        with open("Test Files\\random_bytes_receive.bin", "wb") as f:
+            f.write(data)
+        print(f"done")
+
     case 's':
-        with open("Test Files\\sending_file.txt", "rb") as f:
-            send_data(IP, PORT, f.read())
+        with open("Test Files\\random_bytes.bin", "rb") as f:
+            file_transfer.send_data(IP, PORT, f.read())
     case _: exit()

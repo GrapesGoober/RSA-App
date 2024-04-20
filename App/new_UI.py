@@ -1,6 +1,6 @@
 import json
 
-from Protocol import send_data, receive_stream
+from Protocol import file_transfer
 from RSA import generate_keys
 
 def secure_file_tranfer():
@@ -37,14 +37,29 @@ def generate_keys():
             json.dump(config, f, indent=4)  # Write back to file with indentation
 
 def sending():
-    generate_keys()
-    dest_IP = input("Enter IP: ")
-    dest_PORT = int(input("Enter Port: "))
-    data = ""
-    send_data(dest_IP,dest_PORT,data)
+    IP, Port = enterIP()
+    path = input("Enter file path: ")
+    with open(path,"rb") as data:
+        file_transfer.send_data(IP,Port,data.read())
 
 def recieving():
-    dest_IP = input("Enter IP: ")
-    dest_PORT = int(input("Enter Port: "))
-    key = []
-    receive_stream(dest_IP,dest_PORT,key)
+    IP, Port = enterIP()
+    generate_keys()
+    with open("App\config.json", "r") as f:
+        config = json.loads(f.read())
+    key = config["k_priv"]
+    print(f"setting server")
+    conn, addr = file_transfer.await_conn(IP,Port,key)
+    print(f"connected from {addr}")
+    print(f"decrypting...")
+    data = file_transfer.receive_and_decrypt(conn, key)
+    print(f"writing to file")
+    recieve_path = input("Enter recieving path: ")
+    with open(recieve_path, "wb") as f:
+        f.write(data)
+    print(f"done")
+
+def enterIP():
+    IP = input("Enter IP:")
+    PORT = int(input("Enter Port: "))
+    return IP, PORT

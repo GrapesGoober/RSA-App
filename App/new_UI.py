@@ -18,12 +18,12 @@ Press Number You Wanna Do: """)
             case "3": exit(0)
             case _:   print("invalid inputs")
 
-def generate_keys():
+def create_key():
     print("The minimum key size is 256")
     size = int(input("Enter keys size: "))
     if size < 256:
         print("Too small! Try again")
-        generate_keys()
+        create_key()
     else:
         pub, priv = generate_keys(size)
         with open("App\config.json", "r") as f:
@@ -44,7 +44,7 @@ def sending():
 
 def recieving():
     IP, Port = enterIP()
-    generate_keys()
+    create_key()
     with open("App\config.json", "r") as f:
         config = json.loads(f.read())
     key = config["k_priv"]

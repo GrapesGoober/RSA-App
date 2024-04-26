@@ -1,6 +1,5 @@
 # this is similiar to file transfer protocol, but this can handle variable data sizes
 import socket, RSA
-from typing import Generator
 from cryptography.fernet import Fernet
 
 class Receiver:
@@ -12,22 +11,18 @@ class Receiver:
     def __enter__(self):
         self.sock.listen()
         self.conn, addr = self.sock.accept()
-
         _, modulus = self.rsa_key
         modulus = modulus.to_bytes(modulus.bit_length() // 8 + 1)
         self.conn.sendall(modulus)
         ssk_exchange = self.conn.recv(1024)
         self.fernet_ssk = RSA.decrypt(ssk_exchange, self.rsa_key)
         self.fernet = Fernet(self.fernet_ssk)
-
         return self
     
     def __exit__(self, e_type, e_val, traceback):
-        # once the receiver is exited, close connection
         self.conn.close()
 
     def get_message(self) -> bytes:
-        # try getting some data, if so decrypts
         bufsize = int.from_bytes(self.conn.recv(2)) # limit buf size to 65KB
         if not bufsize: return None
         data = self.conn.recv(bufsize)

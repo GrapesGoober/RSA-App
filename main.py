@@ -1,4 +1,4 @@
-from Protocol import file_transfer
+from Protocol import file_transfer, Receiver, Sender
 import RSA
 
 IP = "127.0.0.1"
@@ -8,18 +8,13 @@ mode = input("enter mode - receive (r), send (s)")
 match mode:
     case 'r':
         print(f"generating keys")
-        keys = RSA.generate_keys(1024)
-        print(f"setting server")
-        conn, addr = file_transfer.await_conn(IP, PORT, keys)
-        print(f"connected from {addr}")
-        print(f"decrypting...")
-        data = file_transfer.receive_and_decrypt(conn, keys)
-        print(f"writing to file")
-        with open("Test Files\\random_bytes_receive.bin", "wb") as f:
-            f.write(data)
-        print(f"done")
+        keys = RSA.generate_keys(512)
+        print(f"server awaiting connection")
+        with Receiver(IP, PORT, keys) as r:
+            print(f"connected")
+            while m := r.get_message(): print(m.decode())
 
     case 's':
-        with open("Test Files\\random_bytes.bin", "rb") as f:
-            file_transfer.send_data(IP, PORT, f.read())
+        with Sender(IP, PORT) as r:
+            while m := input("> "): r.send(m.encode())
     case _: exit()

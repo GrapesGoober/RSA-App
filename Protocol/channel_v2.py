@@ -21,10 +21,11 @@ class Receiver:
 
     def get_message(self) -> Generator[bytes, None, None]:
         # try getting some data, if so decrypts
-        while data_size := self.conn.recv(2): # limit buf size to 65KB
-            size = int.from_bytes(data_size)
-            data = self.conn.recv(size)
-            yield RSA.decrypt(data, self.keys)
+        header = self.conn.recv(2) # limit buf size to 65KB
+        if not header: return None
+        size = int.from_bytes(header)
+        data = self.conn.recv(size)
+        return RSA.decrypt(data, self.keys)
 
 class Sender:
     def __init__(self, ip: str, port: int) -> None:
@@ -36,14 +37,15 @@ class Sender:
         self.modulus = int.from_bytes(self.conn.recv(1024))
         return self
     
-    def __exit__(self):
+    def __exit__(self, e_type, e_val, traceback):
+        self.conn.sendall(b'\0')
         self.conn.close()
     
     def send(self, message: bytes) -> None:
         for pos in range(0, len(message), 0xFFFF):
             chunk = message[pos:pos + 0xFFFF]
-            data = int.from_bytes(chunk)
-            data = RSA.encrypt(data, self.modulus)
-            self.conn.sendall(len(data))
+            data = RSA.encrypt(chunk, self.modulus)
+            self.conn.sendall(len(data).to_bytes(length=2))
             self.conn.sendall(data)
-        self.conn.sendall(b'\0')
+
+

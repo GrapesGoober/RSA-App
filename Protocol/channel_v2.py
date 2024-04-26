@@ -4,21 +4,22 @@ from typing import Generator
 from cryptography.fernet import Fernet
 
 class Receiver:
-    def __init__(self, ip: str, port: int, keys: tuple[int, int]) -> None:
+    def __init__(self, ip: str, port: int, rsa_key: tuple[int, int]) -> None:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((ip, port))
-        self.keys = keys
-        self.fernet_ssk = Fernet.generate_key()
-        self.fernet = Fernet(self.fernet_ssk)
+        self.rsa_key = rsa_key
 
     def __enter__(self):
         self.sock.listen()
         self.conn, addr = self.sock.accept()
-        # let's try using only AES for now
-        # _, modulus = self.keys
-        # self.conn.sendall(modulus.to_bytes(modulus.bit_length() // 8 + 1))
 
-        self.conn.sendall(self.fernet_ssk)
+        _, modulus = self.rsa_key
+        modulus = modulus.to_bytes(modulus.bit_length() // 8 + 1)
+        self.conn.sendall(modulus)
+        ssk_exchange = self.conn.recv(1024)
+        self.fernet_ssk = RSA.decrypt(ssk_exchange, self.rsa_key)
+        self.fernet = Fernet(self.fernet_ssk)
+
         return self
     
     def __exit__(self, e_type, e_val, traceback):
@@ -36,11 +37,14 @@ class Sender:
     def __init__(self, ip: str, port: int) -> None:
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.host = (ip, port)
+        self.fernet_ssk = Fernet.generate_key()
+        self.fernet = Fernet(self.fernet_ssk)
 
     def __enter__(self):
         self.conn.connect(self.host)
-        self.fernet_ssk = self.conn.recv(44) # fernet uses 44 bytes key
-        self.fernet = Fernet(self.fernet_ssk)
+        modulus = int.from_bytes(self.conn.recv(1024))
+        ssk_exchange = RSA.encrypt(self.fernet_ssk, modulus)
+        self.conn.sendall(ssk_exchange)
         return self
     
     def __exit__(self, e_type, e_val, traceback):

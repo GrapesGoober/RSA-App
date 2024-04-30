@@ -48,9 +48,14 @@ class Sender:
     
     def send(self, message: bytes) -> None:
         token = self.fernet.encrypt(message)
+
         size = len(token)
-        if size > 0xFFFF: raise Exception("Message too big!")
-        self.conn.sendall(size.to_bytes(length=2))
-        self.conn.sendall(token)
+        if size > 0xFFFF:
+            half = len(message) // 2
+            self.send(message[:half])
+            self.send(message[half:])
+        else:
+            self.conn.sendall(size.to_bytes(length=2))
+            self.conn.sendall(token)
 
 

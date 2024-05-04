@@ -77,7 +77,7 @@ def start_program():
         print(""" 
 Welcome to Data tranfering program.
     1 - Chatting
-    2 - tranfer file
+    2 - Tranfering file
     3 - Exit
 Press Number You Wanna Do: """)
 

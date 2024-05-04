@@ -1,1 +1,1 @@
-from App.new_UI import secure_file_tranfer
+from App.new_UI import start_program

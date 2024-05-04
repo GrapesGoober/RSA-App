@@ -4,19 +4,18 @@ from Protocol import file_transfer, Receiver, Sender
 from RSA import generate_keys
 
 def secure_file_tranfer():
-    while True:
-        print(""" 
-Welcome to secure file tranfering program.
+    print(""" 
+Secure file tranfering program.
     1 - Sending File
     2 - Recieving file
-    3 - Exit
-Press Number You Wanna Do: """)
+    3 - Return
+Press Select your activity: """)
 
-        match input():
-            case "1": sending()
-            case "2": recieving()
-            case "3": exit(0)
-            case _:   print("invalid inputs")
+    match input():
+        case "1": sending()
+        case "2": recieving()
+        case "3": start_program()
+        case _:   print("invalid inputs")
 
 def create_key():
     print("The minimum key size is 256")
@@ -34,6 +33,7 @@ def create_key():
             print("Invalid input. Please enter a valid value.")
         with open("App\config.json", "w") as f:
             json.dump(config, f, indent=4)  # Write back to file with indentation
+    return(keys)
 
 def enterIP():
     IP = input("Enter IP:")
@@ -55,8 +55,7 @@ def sending():
 
 def recieving():
     IP, Port = enterIP()
-    create_key()
-    key = reading_key()
+    key = create_key()
     print(f"server awaiting connection")
     with Receiver(IP, Port, key) as r:
         print(f"connected")
@@ -72,3 +71,45 @@ def recieving():
     #with open(recieve_path, "wb") as f:
     #    f.write(data)
     #print(f"done")
+
+def start_program():
+    while True:
+        print(""" 
+Welcome to Data tranfering program.
+    1 - Chatting
+    2 - tranfer file
+    3 - Exit
+Press Number You Wanna Do: """)
+
+        match input():
+            case "1": Chatroom()
+            case "2": secure_file_tranfer()
+            case "3": exit(0)
+            case _:   print("invalid inputs")
+
+def Chatroom():
+    print(""" 
+Secure messaging program.
+    1 - Sending
+    2 - Recieving
+    3 - Return
+Press Select your activity: """)
+
+    match input():
+        case "1": message_sending()
+        case "2": message_recieving()
+        case "3": start_program()
+        case _:   print("invalid inputs")
+        
+def message_sending():
+    IP, Port = enterIP()
+    with Sender(IP, Port) as r:
+        while m := input("> "): r.send(m.encode())
+
+def message_recieving():
+    IP, Port = enterIP()
+    key = create_key()
+    print(f"server awaiting connection")
+    with Receiver(IP, Port, key) as r:
+        print(f"connected")
+        while m := r.get_message(): print(m.decode())

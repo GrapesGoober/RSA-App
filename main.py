@@ -5,7 +5,7 @@ import RSA
 IP = "127.0.0.1"
 PORT = 5000
 
-mode = input("enter mode - receive (r), send (s)")
+#mode = input("enter mode - receive (r), send (s)")
 #match mode:
     # # this code here is a chat channel
     # case 'r':

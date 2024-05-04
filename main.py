@@ -1,4 +1,4 @@
-from App import secure_file_tranfer
+from App import start_program
 from Protocol import file_transfer, Receiver, Sender
 import RSA
 
@@ -35,4 +35,4 @@ PORT = 5000
 #            with open("Test Files\\random_bytes.bin", "rb") as f:
 #                while m := f.read(1024): r.send(m)
 #    case _: exit()
-secure_file_tranfer()
+start_program()

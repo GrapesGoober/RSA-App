@@ -83,7 +83,8 @@ def reading_key():
 def sending():
     IP, Port = enterIP()
     path = input("Enter file path: ")
-    with Sender(IP, Port) as r:
+    name = input("Recipient Username: ")
+    with Sender(IP, Port, name) as r:
             with open(path, "rb") as f:
                 while m := f.read(1024): r.send(m)
 
@@ -111,7 +112,7 @@ Press Select your activity: """)
         case _:   print("invalid inputs")
         
 def message_sending():
-    name = input("Destination Name")
+    name = input("Recipient Username: ")
     IP, Port = enterIP()
     with Sender(IP, Port, name) as r:
         while m := input("> "): r.send(m.encode())

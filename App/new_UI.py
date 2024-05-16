@@ -1,6 +1,6 @@
 import json
 
-from Protocol import file_transfer, Receiver, Sender
+from Protocol import Receiver, Sender
 from RSA import generate_keys
 
 def start_program():

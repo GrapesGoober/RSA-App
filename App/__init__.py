@@ -1,1 +1,1 @@
-from App.new_UI import start_program, create_key
+from App.UI import start_program, create_key

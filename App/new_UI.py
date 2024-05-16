@@ -82,16 +82,16 @@ def reading_key():
 
 def sending():
     IP, Port = enterIP()
+    Dest_name = input("Enter destination name: ")
     path = input("Enter file path: ")
-    with Sender(IP, Port) as r:
+    with Sender(IP, Port, Dest_name) as r:
             with open(path, "rb") as f:
                 while m := f.read(1024): r.send(m)
 
 def recieving():
     IP, Port = enterIP()
-    key = create_key()
     print(f"server awaiting connection")
-    with Receiver(IP, Port, key) as r:
+    with Receiver(IP, Port) as r:
         print(f"connected")
         with open("Test Files\\random_bytes_receive.bin", "wb") as f:
             while m := r.get_message(): f.write(m)
@@ -113,13 +113,13 @@ Press Select your activity: """)
         
 def message_sending():
     IP, Port = enterIP()
-    with Sender(IP, Port) as r:
+    Dest_name = input("Enter destination name: ")
+    with Sender(IP, Port, Dest_name) as r:
         while m := input("> "): r.send(m.encode())
 
 def message_recieving():
     IP, Port = enterIP()
-    key = create_key()
     print(f"server awaiting connection")
-    with Receiver(IP, Port, key) as r:
+    with Receiver(IP, Port) as r:
         print(f"connected")
         while m := r.get_message(): print(m.decode())

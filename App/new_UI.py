@@ -40,14 +40,19 @@ def create_key():
         return create_key()
     else:
         keys = generate_keys(size)
-        with open("App\\config.json", "r") as f:
+        with open("App\\private_key.json", "r") as f:
             config = json.loads(f.read())
         try:
             config["keys"] = keys
         except ValueError:
             print("Invalid input. Please enter a valid value.")
-        with open("App\\config.json", "w") as f:
+        with open("App\\private_key.json", "w") as f:
             json.dump(config, f, indent=4)  # Write back to file with indentation
+        user = input("Enter Username: ")
+        data = {user:keys[1]}
+        with open("Protocol\\public_key.json", "w") as f:
+            json.dump(data,f)
+        
     return keys
 
 def enterIP():

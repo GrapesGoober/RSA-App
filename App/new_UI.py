@@ -112,8 +112,9 @@ Press Select your activity: """)
         case _:   print("invalid inputs")
         
 def message_sending():
+    name = input("Destination Name")
     IP, Port = enterIP()
-    with Sender(IP, Port) as r:
+    with Sender(IP, Port, name) as r:
         while m := input("> "): r.send(m.encode())
 
 def message_recieving():

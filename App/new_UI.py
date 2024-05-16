@@ -3,6 +3,21 @@ import json
 from Protocol import file_transfer, Receiver, Sender
 from RSA import generate_keys
 
+def start_program():
+    while True:
+        print(""" 
+Welcome to Data tranfering program.
+    1 - Chatting
+    2 - Tranfering file
+    3 - Exit
+Press Number You Wanna Do: """)
+
+        match input():
+            case "1": Chatroom()
+            case "2": secure_file_tranfer()
+            case "3": exit(0)
+            case _:   print("invalid inputs")
+
 def secure_file_tranfer():
     print(""" 
 Secure file tranfering program.
@@ -22,7 +37,7 @@ def create_key():
     size = int(input("Enter keys size: "))
     if size < 256:
         print("Too small! Try again")
-        create_key()
+        return create_key()
     else:
         keys = generate_keys(size)
         with open("App\\config.json", "r") as f:
@@ -33,7 +48,7 @@ def create_key():
             print("Invalid input. Please enter a valid value.")
         with open("App\\config.json", "w") as f:
             json.dump(config, f, indent=4)  # Write back to file with indentation
-    return(keys)
+    return keys
 
 def enterIP():
     IP = input("Enter IP:")
@@ -62,30 +77,6 @@ def recieving():
         with open("Test Files\\random_bytes_receive.bin", "wb") as f:
             while m := r.get_message(): f.write(m)
     print(f"done")
-    #conn, addr = file_transfer.await_conn(IP,Port,key)
-    #print(f"connected from {addr}")
-    #print(f"decrypting...")
-    #data = file_transfer.receive_and_decrypt(conn, key)
-    #print(f"writing to file")
-    #recieve_path = input("Enter recieving path: ")
-    #with open(recieve_path, "wb") as f:
-    #    f.write(data)
-    #print(f"done")
-
-def start_program():
-    while True:
-        print(""" 
-Welcome to Data tranfering program.
-    1 - Chatting
-    2 - Tranfering file
-    3 - Exit
-Press Number You Wanna Do: """)
-
-        match input():
-            case "1": Chatroom()
-            case "2": secure_file_tranfer()
-            case "3": exit(0)
-            case _:   print("invalid inputs")
 
 def Chatroom():
     print(""" 

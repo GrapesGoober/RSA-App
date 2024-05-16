@@ -32,43 +32,6 @@ Press Select your activity: """)
         case "3": start_program()
         case _:   print("invalid inputs")
 
-def create_key():
-  print("The minimum key size is 256")
-  size = int(input("Enter key size: "))
-  if size < 256:
-    print("Too small! Try again")
-    return create_key()
-  else:
-    # Replace with actual key generation using cryptography library
-    key = generate_keys(size)
-
-    # Securely store private key using a keystore library (not shown)
-    with open("App\\private_key.json", "r") as f:
-        config = json.loads(f.read())
-    try:
-        config["keys"] = key
-    except ValueError:
-        print("Invalid input. Please enter a valid value.")
-    with open("App\\private_key.json", "w") as f:
-        json.dump(config, f, indent=4)
-
-    user = input("Enter Username: ")
-    data = {user: key[1]}  # Assuming public key is a dictionary
-
-    # Open the JSON file (create if it doesn't exist)
-    with open("Protocol\\public_key.json", "r+") as f:
-      try:
-        existing_data = json.load(f)
-      except json.JSONDecodeError:
-        existing_data = {}
-
-      existing_data.update(data)
-      f.seek(0)
-      json.dump(existing_data, f, indent=4)
-
-    # Consider returning only the public key or specific elements
-    return key
-
 def enterIP():
     IP = input("Enter IP:")
     PORT = int(input("Enter Port: "))

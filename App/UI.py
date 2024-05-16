@@ -53,10 +53,11 @@ def sending():
 
 def recieving():
     IP, Port = enterIP()
+    path = input("Enter result file path: ")
     print(f"server awaiting connection")
     with Receiver(IP, Port) as r:
         print(f"connected")
-        with open("Test Files\\random_bytes_receive.bin", "wb") as f:
+        with open(path, "wb") as f:
             while m := r.get_message(): f.write(m)
     print(f"done")
 

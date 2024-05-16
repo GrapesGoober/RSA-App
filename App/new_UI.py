@@ -25,13 +25,13 @@ def create_key():
         create_key()
     else:
         keys = generate_keys(size)
-        with open("App\config.json", "r") as f:
+        with open("App\\config.json", "r") as f:
             config = json.loads(f.read())
         try:
             config["keys"] = keys
         except ValueError:
             print("Invalid input. Please enter a valid value.")
-        with open("App\config.json", "w") as f:
+        with open("App\\config.json", "w") as f:
             json.dump(config, f, indent=4)  # Write back to file with indentation
     return(keys)
 
@@ -41,7 +41,7 @@ def enterIP():
     return IP, PORT
 
 def reading_key():
-    with open("App\config.json", "r") as f:
+    with open("App\\config.json", "r") as f:
         config = json.loads(f.read())
     key = config["keys"]
     return key
